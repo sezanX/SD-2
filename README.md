@@ -37,4 +37,4 @@ The tax calculation logic, including tax-free limits, slab amounts/rates, exempt
 
 **License:**
 
-This project is licensed under the [Your Chosen License - e.g., MIT License](LICENSE).
+This project is licensed under the [2025, MIT License](LICENSE).
