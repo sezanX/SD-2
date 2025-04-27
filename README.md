@@ -1,853 +1,171 @@
-Okay, let's build a simple Tax Calculator Android app with a modern UI using Java and XML. We'll use Material Components for a contemporary look and feel.
-
-**Project Setup (Android Studio)**
-
-1.  **Create a New Project:**
-    *   Open Android Studio.
-    *   Click "File" -> "New" -> "New Project...".
-    *   Choose the "Empty Views Activity" template.
-    *   Click "Next".
-    *   Configure your project:
-        *   **Name:** Tax Calculator (or your preferred name)
-        *   **Package name:** `com.yourcompany.taxcalculator` (replace `yourcompany`)
-        *   **Save location:** Choose where to save it.
-        *   **Language:** Java
-        *   **Minimum SDK:** Choose an appropriate API level (e.g., API 21 or higher for good Material Design support).
-    *   Click "Finish". Android Studio will set up the basic project structure.
-
-**Step 1: Add Material Components Dependency**
-
-Ensure your app-level `build.gradle` (the one in the `app` directory, not the root project) includes the Material Components library dependency. It's usually included by default in newer Android Studio versions, but double-check:
-
-```gradle
-// In app/build.gradle -> dependencies { ... }
-implementation 'com.google.android.material:material:1.12.0' // Use the latest version
-```
-
-Sync your project after adding/checking the dependency (File -> Sync Project with Gradle Files).
-
-**Step 2: Define Colors (res/values/colors.xml)**
-
-Let's define some basic colors for our theme.
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Base colors matching Material 3 theme -->
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-
-    <!-- App Specific Colors -->
-    <color name="colorPrimary">@color/purple_500</color>
-    <color name="colorPrimaryVariant">@color/purple_700</color>
-    <color name="colorOnPrimary">@color/white</color>
-    <color name="colorSecondary">@color/teal_200</color>
-    <color name="colorSecondaryVariant">@color/teal_700</color>
-    <color name="colorOnSecondary">@color/black</color>
-    <color name="colorSurface">@color/white</color>
-    <color name="colorOnSurface">@color/black</color>
-    <color name="colorBackground">#F5F5F5</color> <!-- Light gray background -->
-    <color name="colorOnBackground">@color/black</color>
-    <color name="colorError">#B00020</color>
-    <color name="colorOnError">@color/white</color>
-    <color name="textColorPrimary">#DE000000</color> <!-- 87% black -->
-    <color name="textColorSecondary">#8A000000</color> <!-- 54% black -->
-    <color name="textInputOutlineColor">#8A000000</color>
-</resources>
-```
-
-**Step 3: Define Strings (res/values/strings.xml)**
-
-Centralize all user-facing text.
-
-```xml
-<resources>
-    <string name="app_name">Tax Calculator</string>
-
-    <!-- UI Labels and Hints -->
-    <string name="enter_amount_hint">Enter Amount ($)</string>
-    <string name="enter_tax_rate_hint">Enter Tax Rate (%)</string>
-    <string name="calculate_button">Calculate Tax</string>
-    <string name="tax_amount_label">Tax Amount:</string>
-    <string name="total_amount_label">Total Amount (incl. Tax):</string>
-    <string name="initial_result_value">$0.00</string>
-
-    <!-- Error Messages -->
-    <string name="error_empty_amount">Please enter an amount</string>
-    <string name="error_invalid_amount">Invalid amount entered</string>
-    <string name="error_empty_rate">Please enter a tax rate</string>
-    <string name="error_invalid_rate">Invalid tax rate entered</string>
-    <string name="error_negative_rate">Tax rate cannot be negative</string>
-
-</resources>
-```
-
-**Step 4: Update Theme (res/values/themes.xml)**
-
-Make sure your app uses a Material Components theme. Replace the contents of `themes.xml` (and potentially `themes.xml (night)`) with something like this:
-
-```xml
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.TaxCalculator" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
-        <item name="colorOnPrimary">@color/colorOnPrimary</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
-        <item name="colorOnSecondary">@color/colorOnSecondary</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-        <item name="colorSurface">@color/colorSurface</item>
-        <item name="colorOnSurface">@color/colorOnSurface</item>
-        <item name="android:colorBackground">@color/colorBackground</item>
-        <item name="colorOnBackground">@color/colorOnBackground</item>
-        <item name="colorError">@color/colorError</item>
-        <item name="colorOnError">@color/colorOnError</item>
-
-        <!-- Set default text colors -->
-        <item name="android:textColorPrimary">@color/textColorPrimary</item>
-        <item name="android:textColorSecondary">@color/textColorSecondary</item>
-
-        <!-- Style TextInputLayout -->
-         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
-
-        <!-- Style MaterialButton -->
-        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
-
-    </style>
-
-    <style name="Theme.TaxCalculator" parent="Base.Theme.TaxCalculator" />
-
-    <!-- Optional: Define specific styles if needed -->
-    <style name="ResultTextView">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/textColorPrimary</item>
-        <item name="android:layout_marginTop">8dp</item>
-    </style>
-
-</resources>
-```
-
-*(Make sure to update the `<application>` tag in your `AndroidManifest.xml` to use this theme: `android:theme="@style/Theme.TaxCalculator"`)*
-
-**Step 5: Design the Layout (res/layout/activity_main.xml)**
-
-Use `ConstraintLayout` for flexibility and Material Components (`TextInputLayout`, `TextInputEditText`, `MaterialButton`) for the modern look.
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="24dp"
-    tools:context=".MainActivity">
-
-    <!-- Amount Input Field -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldLayoutAmount"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/enter_amount_hint"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:boxStrokeColor="@color/colorPrimary"
-        app:hintTextColor="@color/colorPrimary"
-        app:startIconDrawable="@drawable/ic_money" > <!-- Add an icon (see below) -->
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextAmount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:imeOptions="actionNext" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Tax Rate Input Field -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldLayoutTaxRate"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="@string/enter_tax_rate_hint"
-        app:layout_constraintTop_toBottomOf="@id/textFieldLayoutAmount"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:boxStrokeColor="@color/colorPrimary"
-        app:hintTextColor="@color/colorPrimary"
-        app:startIconDrawable="@drawable/ic_percent"> <!-- Add an icon (see below) -->
-
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextTaxRate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:imeOptions="actionDone"/> <!-- Use actionDone for the last input -->
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Calculate Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonCalculate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/calculate_button"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:textSize="16sp"
-        app:cornerRadius="8dp"
-        app:layout_constraintTop_toBottomOf="@id/textFieldLayoutTaxRate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Results Section -->
-    <TextView
-        android:id="@+id/textViewTaxAmountLabel"
-        style="@style/ResultTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tax_amount_label"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@id/buttonCalculate"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/textViewTaxAmountResult"
-        style="@style/ResultTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/initial_result_value"
-        android:textStyle="bold"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/textViewTaxAmountLabel"
-        app:layout_constraintBaseline_toBaselineOf="@id/textViewTaxAmountLabel"
-        app:layout_constraintStart_toEndOf="@id/textViewTaxAmountLabel"/>
-
-    <TextView
-        android:id="@+id/textViewTotalAmountLabel"
-        style="@style/ResultTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/total_amount_label"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/textViewTaxAmountLabel"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/textViewTotalAmountResult"
-        style="@style/ResultTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/initial_result_value"
-        android:textStyle="bold"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/textViewTotalAmountLabel"
-        app:layout_constraintBaseline_toBaselineOf="@id/textViewTotalAmountLabel"
-        app:layout_constraintStart_toEndOf="@id/textViewTotalAmountLabel"/>
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
-```
-
-**Step 5.1: Add Icons (Optional but Recommended)**
-
-1.  Right-click on the `res/drawable` folder.
-2.  Select "New" -> "Vector Asset".
-3.  Click on the "Clip Art" icon.
-4.  Search for icons like "money" or "attach_money" and "percent" or "percentage".
-5.  Choose an icon, customize its name (e.g., `ic_money`, `ic_percent`), color (you can set it to `@color/colorPrimary` or leave it black/grey), and size.
-6.  Click "Next" and "Finish". Repeat for the other icon.
-7.  These icons are now referenced in the `app:startIconDrawable` attributes in the layout XML.
-
-**Step 6: Implement the Logic (java/your_package_name/MainActivity.java)**
-
-```java
-package com.yourcompany.taxcalculator; // Replace with your actual package name
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
-import android.os.Bundle;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-
-import java.text.NumberFormat;
-import java.util.Locale;
-
-public class MainActivity extends AppCompatActivity {
-
-    // Declare UI elements
-    private TextInputLayout textFieldLayoutAmount;
-    private TextInputEditText editTextAmount;
-    private TextInputLayout textFieldLayoutTaxRate;
-    private TextInputEditText editTextTaxRate;
-    private MaterialButton buttonCalculate;
-    private TextView textViewTaxAmountResult;
-    private TextView textViewTotalAmountResult;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // Initialize UI elements
-        textFieldLayoutAmount = findViewById(R.id.textFieldLayoutAmount);
-        editTextAmount = findViewById(R.id.editTextAmount);
-        textFieldLayoutTaxRate = findViewById(R.id.textFieldLayoutTaxRate);
-        editTextTaxRate = findViewById(R.id.editTextTaxRate);
-        buttonCalculate = findViewById(R.id.buttonCalculate);
-        textViewTaxAmountResult = findViewById(R.id.textViewTaxAmountResult);
-        textViewTotalAmountResult = findViewById(R.id.textViewTotalAmountResult);
-
-        // Set up the button's click listener
-        buttonCalculate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                calculateTax();
-                hideKeyboard(v); // Hide keyboard after calculation
-            }
-        });
-    }
-
-    private void calculateTax() {
-        // Clear previous errors
-        textFieldLayoutAmount.setError(null);
-        textFieldLayoutTaxRate.setError(null);
-
-        String amountStr = editTextAmount.getText().toString();
-        String rateStr = editTextTaxRate.getText().toString();
-
-        // --- Input Validation ---
-        if (amountStr.isEmpty()) {
-            textFieldLayoutAmount.setError(getString(R.string.error_empty_amount));
-            return;
-        }
-        if (rateStr.isEmpty()) {
-            textFieldLayoutTaxRate.setError(getString(R.string.error_empty_rate));
-            return;
-        }
-
-        double amount;
-        double ratePercent;
-
-        try {
-            amount = Double.parseDouble(amountStr);
-        } catch (NumberFormatException e) {
-            textFieldLayoutAmount.setError(getString(R.string.error_invalid_amount));
-            return;
-        }
-
-        try {
-            ratePercent = Double.parseDouble(rateStr);
-        } catch (NumberFormatException e) {
-            textFieldLayoutTaxRate.setError(getString(R.string.error_invalid_rate));
-            return;
-        }
-
-        if (ratePercent < 0) {
-             textFieldLayoutTaxRate.setError(getString(R.string.error_negative_rate));
-             return;
-        }
-
-        // --- Calculation ---
-        double taxAmount = amount * (ratePercent / 100.0);
-        double totalAmount = amount + taxAmount;
-
-        // --- Formatting Output ---
-        // Use NumberFormat for currency formatting based on locale
-        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.getDefault());
-        // Alternatively, force US Dollars: NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
-
-        // --- Display Results ---
-        textViewTaxAmountResult.setText(currencyFormatter.format(taxAmount));
-        textViewTotalAmountResult.setText(currencyFormatter.format(totalAmount));
-    }
-
-    // Helper method to hide the keyboard
-    private void hideKeyboard(View view) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null && view != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-        // Clear focus to prevent keyboard popping up again on text view tap
-        View currentFocus = getCurrentFocus();
-        if (currentFocus != null) {
-            currentFocus.clearFocus();
-        }
-    }
-}
-```
-
-**Explanation:**
-
-1.  **XML Layout (`activity_main.xml`):**
-    *   Uses `ConstraintLayout` to position elements relative to each other.
-    *   Uses `TextInputLayout` and `TextInputEditText` for Material Design input fields. `TextInputLayout` provides the floating label, hint, error display, and outlined box style.
-    *   Uses `MaterialButton` for a styled button.
-    *   Uses standard `TextView`s to display the results, styled slightly via the theme/styles.
-    *   `android:inputType="numberDecimal"` allows users to enter numbers with decimals.
-    *   `android:imeOptions` control the action button on the keyboard (e.g., "Next", "Done").
-    *   `app:startIconDrawable` adds helpful icons to the input fields.
-    *   Padding and margins create spacing.
-
-2.  **Java Logic (`MainActivity.java`):**
-    *   **`onCreate`**: Initializes UI elements using `findViewById` and sets the `OnClickListener` for the button.
-    *   **`calculateTax`**:
-        *   Gets the text from the input fields.
-        *   **Validation**: Checks if fields are empty or contain invalid numbers using `try-catch` for `NumberFormatException`. Uses `setError` on the `TextInputLayout` to display error messages directly with the field. Also checks for negative tax rates.
-        *   **Calculation**: Performs the simple tax calculation. Uses `100.0` to ensure floating-point division.
-        *   **Formatting**: Uses `NumberFormat.getCurrencyInstance()` to format the output nicely as currency according to the user's device locale.
-        *   **Display**: Sets the calculated and formatted values to the result `TextView`s.
-    *   **`hideKeyboard`**: A utility function to dismiss the soft keyboard after the calculation for better UX.
-
-**Run the App**
-
-Connect a device or start an emulator and run the app from Android Studio (Shift+F10 or the Run button). You should see your modern-looking Tax Calculator!Okay, let's build a simple Tax Calculator Android app with a modern UI using Java and XML. We'll use Material Components for a contemporary look and feel.
-
-**Project Setup (Android Studio)**
-
-1.  **Create a New Project:**
-    *   Open Android Studio.
-    *   Click "File" -> "New" -> "New Project...".
-    *   Choose the "Empty Views Activity" template.
-    *   Click "Next".
-    *   Configure your project:
-        *   **Name:** Tax Calculator (or your preferred name)
-        *   **Package name:** `com.yourcompany.taxcalculator` (replace `yourcompany`)
-        *   **Save location:** Choose where to save it.
-        *   **Language:** Java
-        *   **Minimum SDK:** Choose an appropriate API level (e.g., API 21 or higher for good Material Design support).
-    *   Click "Finish". Android Studio will set up the basic project structure.
-
-**Step 1: Add Material Components Dependency**
-
-Ensure your app-level `build.gradle` (the one in the `app` directory, not the root project) includes the Material Components library dependency. It's usually included by default in newer Android Studio versions, but double-check:
-
-```gradle
-// In app/build.gradle -> dependencies { ... }
-implementation 'com.google.android.material:material:1.12.0' // Use the latest version
-```
-
-Sync your project after adding/checking the dependency (File -> Sync Project with Gradle Files).
-
-**Step 2: Define Colors (res/values/colors.xml)**
-
-Let's define some basic colors for our theme.
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Base colors matching Material 3 theme -->
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-
-    <!-- App Specific Colors -->
-    <color name="colorPrimary">@color/purple_500</color>
-    <color name="colorPrimaryVariant">@color/purple_700</color>
-    <color name="colorOnPrimary">@color/white</color>
-    <color name="colorSecondary">@color/teal_200</color>
-    <color name="colorSecondaryVariant">@color/teal_700</color>
-    <color name="colorOnSecondary">@color/black</color>
-    <color name="colorSurface">@color/white</color>
-    <color name="colorOnSurface">@color/black</color>
-    <color name="colorBackground">#F5F5F5</color> <!-- Light gray background -->
-    <color name="colorOnBackground">@color/black</color>
-    <color name="colorError">#B00020</color>
-    <color name="colorOnError">@color/white</color>
-    <color name="textColorPrimary">#DE000000</color> <!-- 87% black -->
-    <color name="textColorSecondary">#8A000000</color> <!-- 54% black -->
-    <color name="textInputOutlineColor">#8A000000</color>
-</resources>
-```
-
-**Step 3: Define Strings (res/values/strings.xml)**
-
-Centralize all user-facing text.
-
-```xml
-<resources>
-    <string name="app_name">Tax Calculator</string>
-
-    <!-- UI Labels and Hints -->
-    <string name="enter_amount_hint">Enter Amount ($)</string>
-    <string name="enter_tax_rate_hint">Enter Tax Rate (%)</string>
-    <string name="calculate_button">Calculate Tax</string>
-    <string name="tax_amount_label">Tax Amount:</string>
-    <string name="total_amount_label">Total Amount (incl. Tax):</string>
-    <string name="initial_result_value">$0.00</string>
-
-    <!-- Error Messages -->
-    <string name="error_empty_amount">Please enter an amount</string>
-    <string name="error_invalid_amount">Invalid amount entered</string>
-    <string name="error_empty_rate">Please enter a tax rate</string>
-    <string name="error_invalid_rate">Invalid tax rate entered</string>
-    <string name="error_negative_rate">Tax rate cannot be negative</string>
-
-</resources>
-```
-
-**Step 4: Update Theme (res/values/themes.xml)**
-
-Make sure your app uses a Material Components theme. Replace the contents of `themes.xml` (and potentially `themes.xml (night)`) with something like this:
-
-```xml
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.TaxCalculator" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
-        <item name="colorOnPrimary">@color/colorOnPrimary</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
-        <item name="colorOnSecondary">@color/colorOnSecondary</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-        <item name="colorSurface">@color/colorSurface</item>
-        <item name="colorOnSurface">@color/colorOnSurface</item>
-        <item name="android:colorBackground">@color/colorBackground</item>
-        <item name="colorOnBackground">@color/colorOnBackground</item>
-        <item name="colorError">@color/colorError</item>
-        <item name="colorOnError">@color/colorOnError</item>
-
-        <!-- Set default text colors -->
-        <item name="android:textColorPrimary">@color/textColorPrimary</item>
-        <item name="android:textColorSecondary">@color/textColorSecondary</item>
-
-        <!-- Style TextInputLayout -->
-         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
-
-        <!-- Style MaterialButton -->
-        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
-
-    </style>
-
-    <style name="Theme.TaxCalculator" parent="Base.Theme.TaxCalculator" />
-
-    <!-- Optional: Define specific styles if needed -->
-    <style name="ResultTextView">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/textColorPrimary</item>
-        <item name="android:layout_marginTop">8dp</item>
-    </style>
-
-</resources>
-```
-
-*(Make sure to update the `<application>` tag in your `AndroidManifest.xml` to use this theme: `android:theme="@style/Theme.TaxCalculator"`)*
-
-**Step 5: Design the Layout (res/layout/activity_main.xml)**
-
-Use `ConstraintLayout` for flexibility and Material Components (`TextInputLayout`, `TextInputEditText`, `MaterialButton`) for the modern look.
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="24dp"
-    tools:context=".MainActivity">
-
-    <!-- Amount Input Field -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldLayoutAmount"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/enter_amount_hint"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:boxStrokeColor="@color/colorPrimary"
-        app:hintTextColor="@color/colorPrimary"
-        app:startIconDrawable="@drawable/ic_money" > <!-- Add an icon (see below) -->
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextAmount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:imeOptions="actionNext" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Tax Rate Input Field -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textFieldLayoutTaxRate"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="@string/enter_tax_rate_hint"
-        app:layout_constraintTop_toBottomOf="@id/textFieldLayoutAmount"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:boxStrokeColor="@color/colorPrimary"
-        app:hintTextColor="@color/colorPrimary"
-        app:startIconDrawable="@drawable/ic_percent"> <!-- Add an icon (see below) -->
-
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextTaxRate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:imeOptions="actionDone"/> <!-- Use actionDone for the last input -->
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Calculate Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonCalculate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/calculate_button"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:textSize="16sp"
-        app:cornerRadius="8dp"
-        app:layout_constraintTop_toBottomOf="@id/textFieldLayoutTaxRate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Results Section -->
-    <TextView
-        android:id="@+id/textViewTaxAmountLabel"
-        style="@style/ResultTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tax_amount_label"
-        android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@id/buttonCalculate"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/textViewTaxAmountResult"
-        style="@style/ResultTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/initial_result_value"
-        android:textStyle="bold"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/textViewTaxAmountLabel"
-        app:layout_constraintBaseline_toBaselineOf="@id/textViewTaxAmountLabel"
-        app:layout_constraintStart_toEndOf="@id/textViewTaxAmountLabel"/>
-
-    <TextView
-        android:id="@+id/textViewTotalAmountLabel"
-        style="@style/ResultTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/total_amount_label"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/textViewTaxAmountLabel"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/textViewTotalAmountResult"
-        style="@style/ResultTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/initial_result_value"
-        android:textStyle="bold"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/textViewTotalAmountLabel"
-        app:layout_constraintBaseline_toBaselineOf="@id/textViewTotalAmountLabel"
-        app:layout_constraintStart_toEndOf="@id/textViewTotalAmountLabel"/>
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
-```
-
-**Step 5.1: Add Icons (Optional but Recommended)**
-
-1.  Right-click on the `res/drawable` folder.
-2.  Select "New" -> "Vector Asset".
-3.  Click on the "Clip Art" icon.
-4.  Search for icons like "money" or "attach_money" and "percent" or "percentage".
-5.  Choose an icon, customize its name (e.g., `ic_money`, `ic_percent`), color (you can set it to `@color/colorPrimary` or leave it black/grey), and size.
-6.  Click "Next" and "Finish". Repeat for the other icon.
-7.  These icons are now referenced in the `app:startIconDrawable` attributes in the layout XML.
-
-**Step 6: Implement the Logic (java/your_package_name/MainActivity.java)**
-
-```java
-package com.yourcompany.taxcalculator; // Replace with your actual package name
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
-import android.os.Bundle;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
-
-import java.text.NumberFormat;
-import java.util.Locale;
-
-public class MainActivity extends AppCompatActivity {
-
-    // Declare UI elements
-    private TextInputLayout textFieldLayoutAmount;
-    private TextInputEditText editTextAmount;
-    private TextInputLayout textFieldLayoutTaxRate;
-    private TextInputEditText editTextTaxRate;
-    private MaterialButton buttonCalculate;
-    private TextView textViewTaxAmountResult;
-    private TextView textViewTotalAmountResult;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // Initialize UI elements
-        textFieldLayoutAmount = findViewById(R.id.textFieldLayoutAmount);
-        editTextAmount = findViewById(R.id.editTextAmount);
-        textFieldLayoutTaxRate = findViewById(R.id.textFieldLayoutTaxRate);
-        editTextTaxRate = findViewById(R.id.editTextTaxRate);
-        buttonCalculate = findViewById(R.id.buttonCalculate);
-        textViewTaxAmountResult = findViewById(R.id.textViewTaxAmountResult);
-        textViewTotalAmountResult = findViewById(R.id.textViewTotalAmountResult);
-
-        // Set up the button's click listener
-        buttonCalculate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                calculateTax();
-                hideKeyboard(v); // Hide keyboard after calculation
-            }
-        });
-    }
-
-    private void calculateTax() {
-        // Clear previous errors
-        textFieldLayoutAmount.setError(null);
-        textFieldLayoutTaxRate.setError(null);
-
-        String amountStr = editTextAmount.getText().toString();
-        String rateStr = editTextTaxRate.getText().toString();
-
-        // --- Input Validation ---
-        if (amountStr.isEmpty()) {
-            textFieldLayoutAmount.setError(getString(R.string.error_empty_amount));
-            return;
-        }
-        if (rateStr.isEmpty()) {
-            textFieldLayoutTaxRate.setError(getString(R.string.error_empty_rate));
-            return;
-        }
-
-        double amount;
-        double ratePercent;
-
-        try {
-            amount = Double.parseDouble(amountStr);
-        } catch (NumberFormatException e) {
-            textFieldLayoutAmount.setError(getString(R.string.error_invalid_amount));
-            return;
-        }
-
-        try {
-            ratePercent = Double.parseDouble(rateStr);
-        } catch (NumberFormatException e) {
-            textFieldLayoutTaxRate.setError(getString(R.string.error_invalid_rate));
-            return;
-        }
-
-        if (ratePercent < 0) {
-             textFieldLayoutTaxRate.setError(getString(R.string.error_negative_rate));
-             return;
-        }
-
-        // --- Calculation ---
-        double taxAmount = amount * (ratePercent / 100.0);
-        double totalAmount = amount + taxAmount;
-
-        // --- Formatting Output ---
-        // Use NumberFormat for currency formatting based on locale
-        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.getDefault());
-        // Alternatively, force US Dollars: NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US);
-
-        // --- Display Results ---
-        textViewTaxAmountResult.setText(currencyFormatter.format(taxAmount));
-        textViewTotalAmountResult.setText(currencyFormatter.format(totalAmount));
-    }
-
-    // Helper method to hide the keyboard
-    private void hideKeyboard(View view) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null && view != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-        // Clear focus to prevent keyboard popping up again on text view tap
-        View currentFocus = getCurrentFocus();
-        if (currentFocus != null) {
-            currentFocus.clearFocus();
-        }
-    }
-}
-```
-
-**Explanation:**
-
-1.  **XML Layout (`activity_main.xml`):**
-    *   Uses `ConstraintLayout` to position elements relative to each other.
-    *   Uses `TextInputLayout` and `TextInputEditText` for Material Design input fields. `TextInputLayout` provides the floating label, hint, error display, and outlined box style.
-    *   Uses `MaterialButton` for a styled button.
-    *   Uses standard `TextView`s to display the results, styled slightly via the theme/styles.
-    *   `android:inputType="numberDecimal"` allows users to enter numbers with decimals.
-    *   `android:imeOptions` control the action button on the keyboard (e.g., "Next", "Done").
-    *   `app:startIconDrawable` adds helpful icons to the input fields.
-    *   Padding and margins create spacing.
-
-2.  **Java Logic (`MainActivity.java`):**
-    *   **`onCreate`**: Initializes UI elements using `findViewById` and sets the `OnClickListener` for the button.
-    *   **`calculateTax`**:
-        *   Gets the text from the input fields.
-        *   **Validation**: Checks if fields are empty or contain invalid numbers using `try-catch` for `NumberFormatException`. Uses `setError` on the `TextInputLayout` to display error messages directly with the field. Also checks for negative tax rates.
-        *   **Calculation**: Performs the simple tax calculation. Uses `100.0` to ensure floating-point division.
-        *   **Formatting**: Uses `NumberFormat.getCurrencyInstance()` to format the output nicely as currency according to the user's device locale.
-        *   **Display**: Sets the calculated and formatted values to the result `TextView`s.
-    *   **`hideKeyboard`**: A utility function to dismiss the soft keyboard after the calculation for better UX.
-
-**Run the App**
-
-Connect a device or start an emulator and run the app from Android Studio (Shift+F10 or the Run button). You should see your modern-looking Tax Calculator!
+## Bangladesh Tax Calculator - Android App Documentation
+
+**Version:** 1.0 (Based on development interaction)
+
+**Last Updated:** April 23, 2024
+
+---
+
+### 1. Introduction
+
+The Bangladesh Tax Calculator is an Android application designed to help individual taxpayers in Bangladesh estimate their annual income tax liability based on the rules and regulations set forth by the National Board of Revenue (NBR). The app provides a user-friendly interface to input income details, select taxpayer category, input investment information, and view a calculated tax summary. It also includes features to display current tax slabs, generate a PDF summary report, and view developer information.
+
+**Target Audience:** Individual taxpayers in Bangladesh (Salaried individuals, Professionals, Business owners calculating personal tax).
+
+**Technology Stack:**
+
+*   **Platform:** Android
+*   **Language:** Kotlin
+*   **UI:** XML Layouts with Material Design Components
+*   **Architecture:** Basic Activity-based structure with View Binding
+*   **Core Libraries:** AppCompat, Material Components, FileProvider, AndroidX Core
+
+---
+
+### 2. Features
+
+*   **Income Input:** Allows users to input annual Basic Salary, Bonus, and Other Taxable Income.
+*   **Taxpayer Category Selection:** Provides a dropdown (Spinner) to select the taxpayer category (General, Female, Senior Citizen, Person with Disability, Third Gender, Freedom Fighter) which affects the tax-free income threshold.
+*   **Investment Input:** Allows users to input their total eligible investment amount for tax rebate calculation.
+*   **Tax Calculation:** Calculates Gross Taxable Income, Tax Payable before Rebate, Investment Rebate, and Net Tax Payable based on user input and predefined rules (needs verification with NBR circulars).
+*   **Tax Slab Display:** Shows the applicable income tax slabs and rates for the selected assessment year (currently displays general structure, dynamically updates the first slab's range based on category).
+*   **Tax Summary Display:** Presents the calculated results in a clear, card-based format.
+*   **PDF Report Generation & Sharing:** Generates a simple PDF summary of the calculated tax details and allows sharing via standard Android share intents.
+*   **Developer Information Page:** Includes a dedicated page with developer details and contact links (Email, GitHub, LinkedIn).
+*   **Modern UI:** Utilizes Material Design Components for a clean and intuitive user experience.
+
+---
+
+### 3. Project Structure (Key Components)
+
+*   **`app/src/main/java/com/sezanx/taxcalculatorbd/`** (Package Name)
+    *   **`MainActivity.kt`:** The main screen of the application. Handles user input, calculation logic, UI updates, PDF generation trigger, and navigation to Developer Info.
+    *   **`DeveloperInfoActivity.kt`:** Displays information about the developer, including links. Handles link clicks.
+*   **`app/src/main/res/`**
+    *   **`layout/`**
+        *   **`activity_main.xml`:** Defines the UI structure for the main calculator screen using `CoordinatorLayout`, `AppBarLayout`, `NestedScrollView`, `MaterialCardView`, `TextInputLayout`, `Spinner`, `MaterialButton`, etc. Includes the layout for the Tax Slabs card.
+        *   **`activity_developer_info.xml`:** Defines the UI for the Developer Information screen using `CoordinatorLayout`, `AppBarLayout`, `MaterialCardView`, `ShapeableImageView`, `TextView`, etc.
+    *   **`values/`**
+        *   **`colors.xml`:** Defines the color palette used throughout the application.
+        *   **`strings.xml`:** Contains all user-facing text strings, including labels, hints, button texts, taxpayer categories, tax slab ranges/rates, error messages, developer info, etc. This makes the app localization-ready.
+        *   **`themes.xml`:** Defines the base application theme (inheriting from `Theme.Material3...`) and specifies default styles for various Material Components (`MaterialCardView`, `MaterialButton`, `TextInputLayout`, `Toolbar`).
+        *   **`styles.xml`:** Contains additional reusable styles for text appearances (`TextAppearance.App.*`), layout elements (`ResultRowLayout`, `SlabRowLayout`, `AppDivider`), etc.
+    *   **`drawable/`**
+        *   **`ic_check_circle.xml`:** (Vector Drawable) Green checkmark icon (potentially used if status tracking was kept).
+        *   **`bg_spinner.xml`:** (Shape Drawable) Defines the background shape and border for the taxpayer category Spinner.
+        *   **`dev_profile_pic.jpg/png`:** Developer's profile picture placed here.
+    *   **`menu/`**
+        *   **`main_menu.xml`:** Defines the options menu (e.g., three dots in the toolbar) containing the "Developer Info" item.
+    *   **`xml/`**
+        *   **`provider_paths.xml`:** Defines accessible file paths for the `FileProvider` used for sharing the generated PDF.
+*   **`app/build.gradle` (or `build.gradle.kts`)**
+    *   Contains dependencies for core AndroidX libraries, Material Components, and potentially others. Enables View Binding.
+*   **`app/src/main/AndroidManifest.xml`**
+    *   Declares application components (`MainActivity`, `DeveloperInfoActivity`), permissions (like `INTERNET`), the `FileProvider`, and sets the application theme and launcher activity.
+
+---
+
+### 4. Core Algorithms & Logic (`MainActivity.kt`)
+
+#### 4.1. Tax Calculation Flow (`calculateAndDisplayTax` function)
+
+1.  **Get Input:** Retrieves values from `TextInputEditText` fields for Basic Salary, Bonus, Other Income, and Investment using the `getInputAsDouble` helper function. This function handles basic validation (non-empty for required fields, numeric format) and returns `null` on error.
+2.  **Calculate Total Income:** Sums up Basic Salary, Bonus, and Other Income.
+3.  **Apply Exemptions (Placeholder):** Calculates *example* exemptions for House Rent, Medical, and Conveyance based on Basic Salary and predefined limits. **This section MUST be updated with accurate NBR rules.**
+4.  **Calculate Gross Taxable Income:** Subtracts calculated exemptions from Total Income. Ensures the result is not negative.
+5.  **Get Tax-Free Limit:** Calls `getTaxFreeLimit()` function, which checks the selected item position in the `spinnerTaxpayerCategory` and returns the corresponding tax-free income threshold based on predefined constants (e.g., `TAX_FREE_LIMIT_GENERAL`, `TAX_FREE_LIMIT_FEMALE_SENIOR`).
+6.  **Calculate Tax Before Rebate (`calculateTaxSlabs`):**
+    *   Checks if Taxable Income is below the determined Tax-Free Limit. If yes, returns 0 tax.
+    *   If above the limit, subtracts the Tax-Free Limit from the Taxable Income to get the income subject to slabs.
+    *   Iteratively calculates tax for each slab:
+        *   Determines the amount of income falling into the current slab (`coerceAtMost`).
+        *   Applies the corresponding slab rate (`SLAB_RATE_X`).
+        *   Adds the calculated tax for the slab to the total tax.
+        *   Subtracts the taxed amount from the remaining income.
+        *   Moves to the next slab until all remaining income is taxed at the highest rate.
+    *   **Note:** The slab amounts (`SLAB_AMOUNT_X`) represent the *size* of each slab *after* the tax-free limit (e.g., first 100,000, next 400,000). These **must be verified** with NBR rules.
+7.  **Calculate Investment Rebate (`calculateRebate`):**
+    *   Checks if Taxable Income is below the Tax-Free Limit. If yes, returns 0 rebate.
+    *   Determines the maximum base for eligible investment: the *lower* of (Taxable Income * Max Percentage, Max Absolute Amount).
+    *   Determines the actual investment amount considered for rebate: the *lower* of (User's Input Investment, Max Eligible Base).
+    *   Calculates the rebate by applying the Rebate Rate (e.g., 15%) to the investment amount considered.
+    *   **(Verification Needed):** Check if there's an absolute cap on the final rebate amount itself.
+8.  **Calculate Net Tax Payable:** Subtracts the Investment Rebate from the Tax Payable Before Rebate. Ensures the result is not negative (`coerceAtLeast(0.0)`).
+9.  **Apply Minimum Tax:**
+    *   Checks if Taxable Income is above the Tax-Free Limit.
+    *   If yes, compares the calculated Net Tax Payable with the applicable Minimum Tax (currently hardcoded, **needs logic based on user's location/status**). The final Net Tax Payable is the *higher* of the calculated tax or the minimum tax (`coerceAtLeast(minimumTax)`).
+    *   If Taxable Income is below the limit, Net Tax Payable is 0.
+10. **Store Results:** Stores the calculated `taxableIncome`, `taxBeforeRebate`, `investmentRebate`, and `netTaxPayable` in class member variables (`lastCalculated...`) for later use by the PDF generation function.
+11. **Display Results (`displayResults`):** Updates the `TextViews` in the "Tax Summary" card (`cardResults`) with the formatted currency values. Makes the results card visible and scrolls down to it.
+
+#### 4.2. PDF Generation (`generatePdfReport` function)
+
+1.  **Check Data:** Verifies that tax has been calculated previously (checks if `lastCalculatedNetTaxPayable` is not null).
+2.  **Create Document:** Initializes a `PdfDocument` and defines page info (A4 size assumed). Starts a new page and gets the `Canvas`.
+3.  **Define Paints:** Creates `Paint` objects to control the appearance (text size, color, alignment, bold) of different elements (title, labels, values, footer).
+4.  **Draw Content on Canvas:**
+    *   Uses `canvas.drawText()` to draw the title, subtitle (with assessment year and category), labels, and formatted currency values at specific X, Y coordinates.
+    *   Uses `canvas.drawLine()` to draw a divider.
+    *   Calculates `yPos` incrementally to position elements vertically.
+    *   Draws a footer with the generation date and app name.
+5.  **Finish Page:** Calls `pdfDocument.finishPage(page)`.
+6.  **Save File:**
+    *   Generates a unique filename using a timestamp (`TaxReport_YYYYMMDD_HHMMSS.pdf`).
+    *   **For Android Q (API 29) and above:** Uses `MediaStore` API to save the file directly to the public `Downloads` directory. It creates a `ContentValues` entry specifying the filename, MIME type (`application/pdf`), and relative path, then gets a `Uri` via `contentResolver.insert`. An `OutputStream` is opened from this `Uri`, and `pdfDocument.writeTo(outputStream)` writes the data.
+    *   **For versions below Android Q:** Saves the file to the app's *external cache directory* (`applicationContext.externalCacheDir`) in a subfolder. This location doesn't typically require `WRITE_EXTERNAL_STORAGE` permission. It then gets a shareable `Uri` using `FileProvider.getUriForFile()`.
+7.  **Trigger Share (`sharePdf`):** If the file is saved successfully and a `Uri` is obtained, calls the `sharePdf` function.
+8.  **Error Handling:** Uses `try...catch` blocks to handle potential `IOException` during file saving or other exceptions. Shows error messages via `Toast`.
+9.  **Close Document:** Uses a `finally` block to ensure `pdfDocument.close()` is always called, releasing resources.
+
+#### 4.3. PDF Sharing (`sharePdf` function)
+
+1.  **Create Intent:** Creates an `Intent` with `Intent.ACTION_SEND`.
+2.  **Set Type:** Sets the MIME type to `application/pdf`.
+3.  **Add File URI:** Puts the `Uri` of the generated PDF file into the intent's `EXTRA_STREAM`.
+4.  **Grant Permission:** Adds the `Intent.FLAG_GRANT_READ_URI_PERMISSION` flag. This is crucial to allow the app chosen by the user (e.g., Gmail, WhatsApp) to read the file from the provided URI (especially important when using `FileProvider`).
+5.  **Start Chooser:** Uses `Intent.createChooser` to show the standard Android share sheet, allowing the user to select an app to share the PDF with. Includes error handling for `ActivityNotFoundException`.
+
+#### 4.4. UI Updates & Helpers
+
+*   **`setupTaxpayerCategorySpinner`:** Populates the Spinner with categories from `strings.xml` and sets an `OnItemSelectedListener`.
+*   **`updateSlabDisplayCard`:** Updates the text of the first slab range `TextView` (`@+id/textSlab1Range`) based on the selected Spinner position.
+*   **`getTaxFreeLimit`:** Returns the correct tax-free threshold based on the selected Spinner position.
+*   **`displayResults`:** Formats numbers as BDT currency and updates the result `TextViews`. Makes the result card visible and scrolls to it.
+*   **`getInputAsDouble`:** Safely parses text input to `Double`, handling empty strings and format errors, showing errors on the `TextInputLayout`.
+*   **`formatCurrency`:** Formats a `Double` value into a BDT currency string using appropriate locale settings.
+*   **`hideKeyboard`:** Dismisses the soft keyboard.
+
+---
+
+### 5. Setup and Usage
+
+1.  **Build:** Clone/download the project and open it in Android Studio. Ensure all dependencies are synced. Build the project (`Build -> Make Project` or Run).
+2.  **Install:** Install the generated APK on an Android device or emulator.
+3.  **Usage:**
+    *   Launch the app.
+    *   Select the appropriate Taxpayer Category from the dropdown. Notice the first tax slab range updates accordingly.
+    *   Enter Annual Basic Salary (Required).
+    *   Enter Annual Bonus and Other Taxable Income (Optional, enter 0 if none).
+    *   Enter the Total Eligible Investment amount for rebate (Optional, enter 0 if none).
+    *   Tap the "Calculate Tax" button.
+    *   The "Tax Summary" card will appear, displaying the calculated Gross Taxable Income, Tax Payable Before Rebate, Investment Rebate, and Net Tax Payable.
+    *   Tap the "Generate PDF Report" button. A PDF summary will be generated, saved to the Downloads folder, and a share sheet will appear allowing you to share the PDF.
+    *   Tap the options menu (three dots) in the toolbar and select "Developer Info" to view the developer information page.
+
+---
+
+### 6. Known Limitations & Future Improvements
+
+*   **Tax Rule Accuracy:** The implemented tax slabs, rates, exemption rules, and rebate calculations are **examples** based on general understanding or specific screenshots provided during development. They **must be verified and updated** according to the latest official NBR circulars for the relevant Assessment Year to be accurate.
+*   **Exemptions:** The current exemption calculation is highly simplified (placeholder). A robust implementation should allow users to input details for specific allowances (House Rent, Medical, Conveyance, etc.) and apply NBR rules accurately.
+*   **Minimum Tax:** The minimum tax calculation currently uses a default value. It needs to be updated based on the taxpayer's actual location (Dhaka/Ctg City Corp, Other City Corp, Other Area), which requires adding UI for location selection.
+*   **Assessment Year Selection:** The "Year" button currently does nothing. Functionality should be added (e.g., using a DatePicker or NumberPicker) to select the Assessment Year, and the tax rules (constants) should potentially be adjusted based on the selected year.
+*   **Error Handling:** More specific error messages and input validation can be added.
+*   **UI/UX:** Further refinements to the UI, animations, and user feedback can be implemented.
+*   **Localization:** While strings are externalized, translating them into Bengali would improve usability.
+*   **Data Persistence:** User inputs are currently not saved. SharedPreferences or a database could be used to save inputs between sessions.
+*   **Runtime Permissions (Pre-Android 10):** If targeting older Android versions, the code to request `WRITE_EXTERNAL_STORAGE` at runtime needs to be implemented for PDF saving to Downloads (though saving to cache currently bypasses this).
+
+---
+
+This documentation provides a comprehensive overview of the Bangladesh Tax Calculator application as developed. Remember that maintaining accuracy, especially regarding tax rules, is crucial for such an application.
